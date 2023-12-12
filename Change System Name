@@ -1,0 +1,8 @@
+# get serial number of the device
+$serialNumber = Get-CimInstance Win32_BIOS | Select-Object -ExpandProperty SerialNumber
+
+# create the new computer name (Change the * to the company abbreviation)
+$newComputerName = "*-$serialNumber"
+
+# set the new computer name (restart required for for changes to take effect)
+Rename-Computer -NewName $newComputerName -Force 
