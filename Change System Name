@@ -1,8 +1,10 @@
-# Get serial number of the device
+###########################################################################################
+#Grabs the SN of the device and changes the name to format Company_Abbreviation-SN
+#Useful in combination with an RMM to onboard new devices with a standard naming convention
+###########################################################################################
+
 $serialNumber = Get-CimInstance Win32_BIOS | Select-Object -ExpandProperty SerialNumber
 
-# Create the new computer name (Change the * to the company abbreviation)
-$newComputerName = "*-$serialNumber"
+$newComputerName = "*-$serialNumber" #(Change the * to the company abbreviation)
 
-# Set the new computer name (restart required for for changes to take effect)
 Rename-Computer -NewName $newComputerName -Force 
