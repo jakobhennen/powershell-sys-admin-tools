@@ -3,12 +3,8 @@
 # This script is used to push to a device remotely via RMM tool to remove that user from the local administrators group
 ################################################################################################################################
 
-
-# Get the username of the currently logged in user
 $loggedInUser = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty UserName
 
-# Remove the local administrator from the administrators group
 Remove-LocalGroupMember -Group administrators -Member $loggedInUser
 
-# Computer needs to restart for the changed to take effect
-Restart-Computer -Force
+Restart-Computer -Force #Account permissions require a system restart to take effect. If you don't want the system to force restart, remove this line.
