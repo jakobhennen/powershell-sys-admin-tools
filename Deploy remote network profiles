@@ -1,0 +1,54 @@
+####################################################################################################################
+
+# Script to manually/remotely create and connect a host to a network
+# Useful in the case of wanting to connect a device to an alternate network when the network password is not public
+
+####################################################################################################################
+
+param(
+    [string]$SSID = "SSID", # Set the SSID and password in their respective fields
+    [string]$PSK = "PASSWORD"  # (Encase special characters in backticks (`) eg. [string]$PSK = "PA`$$`WORD" to properly escape them.
+)
+
+$guid = New-Guid
+$HexArray = $SSID.ToCharArray() | ForEach-Object { [System.String]::Format("{0:X}", [System.Convert]::ToUInt32($_)) }
+$HexSSID = $HexArray -join ""
+
+@"
+<?xml version="1.0"?>
+<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
+    <name>$SSID</name>
+    <SSIDConfig>
+        <SSID>
+            <hex>$HexSSID</hex>
+            <name>$SSID</name>
+        </SSID>
+    </SSIDConfig>
+    <connectionType>ESS</connectionType>
+    <connectionMode>auto</connectionMode>
+    <MSM>
+        <security>
+            <authEncryption>
+                <authentication>WPA2PSK</authentication>
+                <encryption>AES</encryption>
+                <useOneX>false</useOneX>
+            </authEncryption>
+            <sharedKey>
+                <keyType>passPhrase</keyType>
+                <protected>false</protected>
+                <keyMaterial>$PSK</keyMaterial>
+            </sharedKey>
+        </security>
+    </MSM>
+    <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">
+        <enableRandomization>false</enableRandomization>
+        <randomizationSeed>1451755948</randomizationSeed>
+    </MacRandomization>
+</WLANProfile>
+"@ | Out-File "$($ENV:TEMP)\$guid.SSID"
+
+netsh wlan add profile filename="$($ENV:TEMP)\$guid.SSID" user=all
+
+Remove-Item "$($ENV:TEMP)\$guid.SSID" -Force
+
+netsh wlan connect name="$SSID" #Delete this line to disable automatically connecting when the script is pushed
