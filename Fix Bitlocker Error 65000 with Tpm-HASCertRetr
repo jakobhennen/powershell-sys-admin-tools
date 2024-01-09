@@ -1,0 +1,15 @@
+####################################################
+# Simple fix to the bitlocker encryption error 65000
+####################################################
+
+$taskName = "Tpm-HASCertRetr"
+$task = Get-ScheduledTask -TaskName $taskName
+
+if ($task -eq $null) {
+    Write-Host "Task not found: $taskName"
+} else {
+    $taskPath = $task | Select-Object -ExpandProperty TaskPath
+    Write-Host "Task Path: $taskPath"
+
+    Start-ScheduledTask -TaskPath $taskPath -TaskName $taskName
+}
