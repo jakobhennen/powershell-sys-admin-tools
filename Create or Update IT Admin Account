@@ -1,0 +1,39 @@
+###########################################################################################################################
+# Used to create and push a local administrator account onto devices for managment and security.
+# Replace the fields inside the angled brackets on lines 8-10 with the dessired information and remove the angled brackets.
+# If an account with the desired name already exists, it will update with all the correct information.
+# This can be used for password rotation.
+###########################################################################################################################
+
+$AccountName = "<Account Name>"
+$userName = "<Username>"
+$Description = "Used by <Organization> - Do NOT Delete"
+$password = "<Password>"
+
+if ($existingUser = Get-LocalUser -Name $userName -ErrorAction SilentlyContinue) {
+    $password | ConvertTo-SecureString -AsPlainText -Force
+    Set-LocalUser -Name $userName -Description $Description -Password $password
+
+    $passwordNeverExpires = (Get-LocalUser $userName -ErrorAction SilentlyContinue).PasswordNeverExpires
+
+    if (-not $passwordNeverExpires) {
+        Set-LocalUser -Name $userName -PasswordNeverExpires $true -ErrorAction SilentlyContinue
+    }
+
+    $isAdmin = Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $userName }
+
+    if (!$isAdmin) {
+        Add-LocalGroupMember -Group "Administrators" -Member $userName -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "$AccountName account already exists. Password updated and user attributes modified."
+} else {
+    $password | ConvertTo-SecureString -AsPlainText -Force
+    New-LocalUser -Name $userName -Description $Description -Password $password -ErrorAction SilentlyContinue
+
+    Set-LocalUser -Name $userName -PasswordNeverExpires $true -ErrorAction SilentlyContinue
+
+    Add-LocalGroupMember -Group "Administrators" -Member $userName -ErrorAction SilentlyContinue
+
+    Write-Host "User $userName created and added to the local administrators group."
+}
