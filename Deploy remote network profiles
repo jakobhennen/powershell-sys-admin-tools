@@ -9,7 +9,7 @@
 
 param(
     [string]$SSID = "SSID", # Set the SSID and password in their respective fields
-    [string]$PSK = "PASSWORD"  # (Encase special characters in backticks (`) eg. [string]$PSK = "PA`$$`WORD" to properly escape them.
+    [string]$PSK = "PASSWORD"  # (Encase special characters in backticks (`) eg. [string]$PSK = "PA`$$`WORD" to properly escape them).
 )
 
 $guid = New-Guid
