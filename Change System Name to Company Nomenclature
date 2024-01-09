@@ -1,0 +1,19 @@
+###########################################################################################
+# Grabs the SN of the device and changes the name to format Company_Abbreviation-First10OfSN
+# Useful in combination with an RMM to onboard new devices with a standard naming convention
+# Windows limits a device name to 15 characters. Because some serial numbers can be long
+# this script takes the first 10 of the SN, uses one for the -, and leaves 4 spaces for 
+# company abreviation. 
+# Change <Company Abbreviation> to 1-4 characters on line 13 and remove the angle brackets
+###########################################################################################
+
+$serialNumber = Get-CimInstance Win32_BIOS | Select-Object -ExpandProperty SerialNumber
+
+$firstTenCharacters = $serialNumber.Substring(0, [Math]::Min(10, $serialNumber.Length))
+
+$companyAbbreviation = "<Company Abbreviation>"
+
+$newComputerName = "$companyAbbreviation-$firstTenCharacters"
+
+Rename-Computer -NewName $newComputerName -Force
+#Computer must restart to initialize changes
