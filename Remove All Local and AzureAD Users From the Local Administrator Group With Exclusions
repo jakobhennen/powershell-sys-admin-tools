@@ -1,0 +1,24 @@
+#####################################################################################################################
+# Used for removing local admin from all accounts on the device excluding an IT Admin account 
+# Replace <excluded account> on line 8 with the name of the account you want to exclude and remove the angle brackets
+# If the default windows admin account is disabled (default) when the script is run it will be excluded as well
+#####################################################################################################################
+$localAdmins = net localgroup Administrators | Select-Object -Skip 6 | Where-Object { $_ -and $_ -notmatch 'The command completed successfully.' }
+
+$excludedUser = '<excluded account>'
+$filteredAdmins = $localAdmins | Where-Object { $_ -ne $excludedUser }
+
+Write-Output "`nList of local administrators before exclusion:"
+$localAdmins
+
+foreach ($admin in $filteredAdmins) {
+    if ($admin -eq 'Administrator' -and (Get-LocalUser -Name 'Administrator').Enabled -eq $false) {
+        Write-Output "`nSkipping removal of disabled Administrator account."
+    } else {
+        net localgroup Administrators $admin /delete
+        Write-Output "`nRemoved: $admin"
+    }
+}
+
+Write-Output "`nList of local administrators after exclusion:"
+net localgroup Administrators | Select-Object -Skip 6 | Where-Object { $_ -and $_ -notmatch 'The command completed successfully.' }
