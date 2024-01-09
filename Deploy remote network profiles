@@ -1,11 +1,11 @@
-###############################################################################################################################
+################################################################################################################################
 #Script to manually/remotely create and connect a host to a network
 #Useful in the case of wanting to connect a device to an alternate network when the network password is not public
 
 #Instrutions: 
 #Replace SSID in line 11 with the SSID of the esired network.
-#Replace the PASSWORD in line 12 with the password of the network. (Observe the note when the password uses special characters.
-###############################################################################################################################
+#Replace the PASSWORD in line 12 with the password of the network. (Observe the note when the password uses special characters).
+################################################################################################################################
 
 param(
     [string]$SSID = "SSID", # Set the SSID and password in their respective fields
