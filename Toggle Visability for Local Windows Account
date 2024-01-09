@@ -1,0 +1,26 @@
+###############################################################################
+# Toggles the visability of a local windows account on a windows 10/11 computer
+# Useful for hiding an IT Admin account from users
+# Change <Account Name> on line 9 to the name of the desired account
+# Checks for a registry key and creates one if not found
+################################################################################
+
+
+$AccountName = "<Account Name>"
+
+$RegistryPath = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList'
+
+if (-not (Test-Path -Path $RegistryPath)) {
+    New-Item -Path $RegistryPath -Force | Out-Null
+}
+
+$HideValue = Get-ItemProperty -Path $RegistryPath |
+    Select-Object -ExpandProperty $AccountName
+
+if ($HideValue) {
+    Write-Host "$AccountName account is unhidden. Hiding it now."
+    Set-ItemProperty -Path $RegistryPath -Name $AccountName -Value 0 -Force
+} else {
+    Write-Host "$AccountName account is hidden. Unhiding it now."
+    Set-ItemProperty -Path $RegistryPath -Name $AccountName -Value 1 -Force
+}
