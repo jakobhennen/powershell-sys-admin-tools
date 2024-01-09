@@ -1,7 +1,6 @@
-################################################################################################################################
-# When a user account joins their device to Entra (Previously Azure AD), that user becomes a local administrator on the device
-# This script is used to push to a device remotely via RMM tool to remove that user from the local administrators group
-################################################################################################################################
+##########################################################################
+# Removed the currently logged in user from the local administrators group
+##########################################################################
 
 $loggedInUser = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty UserName
 
